@@ -6,9 +6,9 @@
   --border-strong: #d1d5db;
   --text: #1f2328;
   --text-muted: #6b7280;
-  --accent: #ff9d00;
-  --accent-strong: #ff7a00;
-  --link: #2563eb;
+  --accent: #1e6091;
+  --accent-strong: #124467;
+  --link: #1e6091;
   --pill-bg: #eef1f5;
   --pill-text: #374151;
   --danger: #dc2626;
@@ -25,8 +25,8 @@
     --border-strong: #333b47;
     --text: #e6edf3;
     --text-muted: #8b949e;
-    --accent: #ffb02e;
-    --accent-strong: #ff9d00;
+    --accent: #4a97d6;
+    --accent-strong: #2f80c2;
     --link: #6ea8fe;
     --pill-bg: #21262d;
     --pill-text: #c9d1d9;
@@ -190,7 +190,7 @@ button {
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #1a1a1a;
+  color: #ffffff;
   display: grid;
   place-items: center;
   font-weight: 800;
@@ -267,7 +267,7 @@ button {
   border-radius: 999px;
   border: none;
   background: var(--accent);
-  color: #1a1a1a;
+  color: #ffffff;
   font-weight: 700;
 }
 .hero-stats {
@@ -817,7 +817,7 @@ button {
 
 .btn-primary {
   background: var(--accent);
-  color: #1a1a1a;
+  color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -871,7 +871,7 @@ button {
   height: 72px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #1a1a1a;
+  color: #ffffff;
   display: grid;
   place-items: center;
   font-size: 30px;
