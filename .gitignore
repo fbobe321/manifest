@@ -1,8 +1,11 @@
 # Python
-backend/.venv/
+**/.venv/
 backend/data/
 __pycache__/
 *.pyc
+*.egg-info/
+build/
+dist/
 
 # Node / frontend build
 frontend/node_modules/

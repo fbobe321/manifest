@@ -117,6 +117,22 @@ Vite serves the UI.
 
 Interactive docs: `http://localhost:8080/api/docs`.
 
+## Command-line interface (agent-native)
+
+Everything the web UI does is also scriptable via the [`manifest`](./cli) CLI —
+built so an automated agent can operate the site without a browser. Hierarchical
+commands, a universal `--json` flag, `--help` discovery, and an interactive REPL
+(see [`cli/SKILL.md`](./cli/SKILL.md)).
+
+```bash
+pip install -e cli/
+manifest cfg set-url http://localhost:8080
+manifest login alice
+manifest repo create alice/my-model --type model --task text-generation -t demo
+manifest file add alice/my-model model.safetensors https://host/model.safetensors --size-mb 440
+manifest --json repo list --type model        # structured output for agents
+```
+
 ## Note on the PRD
 
 The PRD described a filesystem *scanner* over a mounted asset share
