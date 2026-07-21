@@ -166,7 +166,7 @@ an in-memory `tmpfs`, and database state is externalized to the host for backup.
 services:
   catalog:
     build: .
-    image: fbobe321/manifest:latest
+    image: fbobe3/manifest:latest
     container_name: local_ai_catalog
     restart: unless-stopped
     ports:
@@ -207,15 +207,28 @@ services:
 ## 10. Publishing / Distribution
 
 - **Source:** GitHub — `https://github.com/fbobe321/manifest`.
-- **Image:** Docker Hub — `fbobe321/manifest:latest`. Run without cloning:
+- **Image:** Docker Hub — `fbobe3/manifest:latest`. Run without cloning:
 
   ```bash
-  docker pull fbobe321/manifest:latest
+  docker pull fbobe3/manifest:latest
   mkdir -p data && chmod 777 data
   docker run -d --name manifest -p 8080:8080 -v "$PWD/data:/app/data" \
     --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges \
-    fbobe321/manifest:latest
+    fbobe3/manifest:latest
   ```
+
+- **Launcher (PyPI):** `manifest-hub` (in [`launcher/`](./launcher)) — a
+  zero-dependency wrapper so the whole app is a `pip install` away. It runs the
+  Docker image above with the same hardening flags:
+
+  ```bash
+  pip install manifest-hub
+  manifest-hub up            # pull (if needed) + start → http://localhost:8080
+  manifest-hub down
+  ```
+
+- **Agent CLI (PyPI-ready):** `manifest-cli` (in [`cli/`](./cli)) — drives the
+  running server's API from scripts (see §6).
 
 ## 11. Changelog
 

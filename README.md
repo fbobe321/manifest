@@ -27,13 +27,26 @@ The SPA is compiled in a Node build stage and copied into the Python image as
 static assets, so the final container has no Node tooling. FastAPI serves the
 JSON API under `/api` and the SPA for every other path.
 
+## Quickstart (pip)
+
+Easiest path — a tiny launcher on PyPI that pulls and runs the hardened image
+for you (requires Docker):
+
+```bash
+pip install manifest-hub
+manifest-hub up --open      # → http://localhost:8080
+manifest-hub down           # stop it
+```
+
+See [`launcher/`](./launcher) for all commands (`status`, `logs -f`, `pull`, …).
+
 ## Run the pre-built image (Docker Hub)
 
-The image is published as [`fbobe321/manifest`](https://hub.docker.com/r/fbobe321/manifest).
+The image is published as [`fbobe3/manifest`](https://hub.docker.com/r/fbobe3/manifest).
 Pull and run it directly — no need to clone this repo:
 
 ```bash
-docker pull fbobe321/manifest:latest
+docker pull fbobe3/manifest:latest
 
 # The SQLite DB is written by the container's non-root user into ./data,
 # so make sure that directory is writable by it:
@@ -43,7 +56,7 @@ docker run -d --name manifest -p 8080:8080 \
   -v "$PWD/data:/app/data" \
   --read-only --tmpfs /tmp --cap-drop ALL \
   --security-opt no-new-privileges \
-  fbobe321/manifest:latest
+  fbobe3/manifest:latest
 # open http://localhost:8080
 ```
 
@@ -53,7 +66,7 @@ published image:
 ```yaml
 services:
   catalog:
-    image: fbobe321/manifest:latest   # instead of `build: .`
+    image: fbobe3/manifest:latest   # instead of `build: .`
     # ...keep the rest of the service definition unchanged
 ```
 
