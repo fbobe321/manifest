@@ -227,10 +227,41 @@ services:
   manifest-hub down
   ```
 
-- **Agent CLI (PyPI-ready):** `manifest-cli` (in [`cli/`](./cli)) — drives the
-  running server's API from scripts (see §6).
+- **Agent CLI (PyPI):** `manifest-cli` (in [`cli/`](./cli)) — drives the
+  running server's API from scripts (see §6). `pip install manifest-cli`.
 
-## 11. Changelog
+## 11. Testing & Quality
+
+A CLI-driven end-to-end suite lives in [`tests/`](./tests). It boots a dedicated
+backend (fresh SQLite DB, demo seeding **off**) on a random port and exercises
+the product through the installed `manifest` command, cross-checking with direct
+API calls.
+
+```bash
+cd tests
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r ../backend/requirements.txt -e ../cli -r requirements-test.txt
+pytest -v
+```
+
+**Coverage (75 tests):** users (create/list/profile/idempotency/validation),
+repositories (CRUD, duplicate/404 handling, likes/downloads, cards, bare-name
+resolution), files (add/list/remove, size conversion, cascade delete, bad URL /
+negative size), search / sort / pagination, facets, API validation & boundaries,
+CLI behavior (JSON vs human output, exit codes, login/config flow), and
+edge-case **bug probes**.
+
+**Issues the suite found and fixed:**
+
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | User search input leaked SQL `LIKE` wildcards — a query of `%` or `_` matched everything. | Escape `% _ \` in `q` and add `escape="\\"` to every `like`/`ilike`. |
+| 2 | `--tag` filter matched substrings — `cat` matched a repo tagged `category`. | Exact-token match against a delimiter-wrapped CSV (`,tags,`). |
+| 3 | A tag value containing a comma was silently split by CSV storage. | Normalize tags on write (split on commas, trim, dedupe); document that tags cannot contain commas. |
+
+All 75 tests pass after the fixes.
+
+## 12. Changelog
 
 Delta from the original single-container draft:
 
@@ -242,5 +273,10 @@ Delta from the original single-container draft:
 - **Added the full product surface:** faceted browse/search, Markdown cards,
   likes/downloads, and demo seed data (`SEED_DEMO_DATA`).
 - **Added the agent-native `manifest` CLI** (see §6) with a `SKILL.md`.
+- **Published** the Docker image (`fbobe3/manifest`) and two PyPI packages
+  (`manifest-hub`, `manifest-cli`); rebranded to a naval theme (anchor logo,
+  ocean-blue palette).
+- **Added an end-to-end test suite** (§11) and fixed the three search/tag defects
+  it uncovered.
 - **Retained** the hardened single-container architecture and every security
   directive from the original spec (§3, §7, §8).

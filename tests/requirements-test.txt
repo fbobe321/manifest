@@ -1,0 +1,3 @@
+# Test-only dependencies (in addition to backend/requirements.txt and the CLI).
+pytest>=8.0
+requests>=2.31

@@ -13,7 +13,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import func, select
+from sqlalchemy import func, literal, select
 from sqlalchemy.orm import Session
 
 import seed
@@ -60,6 +60,24 @@ def _startup() -> None:
     if settings.seed_demo_data:
         with SessionLocal() as db:
             seed.seed_if_empty(db)
+
+
+def _like_escape(term: str) -> str:
+    """Escape LIKE wildcards so user input can't act as a pattern."""
+    return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _normalize_tags(tags: list[str]) -> str:
+    """Flatten/trim/dedupe tags into CSV. Commas are separators, so a value
+    like 'a,b' becomes two tags; individual tags therefore never contain commas.
+    """
+    seen: list[str] = []
+    for raw in tags:
+        for part in raw.split(","):
+            part = part.strip()
+            if part and part not in seen:
+                seen.append(part)
+    return ",".join(seen)
 
 
 # --------------------------------------------------------------------------- #
@@ -154,13 +172,17 @@ def list_repos(
     if license:
         conds.append(Repository.license == license)
     if tag:
-        conds.append(Repository.tags_csv.like(f"%{tag}%"))
+        # Exact-token match against a delimiter-wrapped CSV, wildcards escaped:
+        # ',cat,' will not match ',category,'.
+        esc = _like_escape(tag)
+        wrapped = literal(",").concat(Repository.tags_csv).concat(",")
+        conds.append(wrapped.like(f"%,{esc},%", escape="\\"))
     if q:
-        like = f"%{q}%"
+        like = f"%{_like_escape(q)}%"
         conds.append(
-            Repository.repo_id.ilike(like)
-            | Repository.tags_csv.ilike(like)
-            | Repository.description.ilike(like)
+            Repository.repo_id.ilike(like, escape="\\")
+            | Repository.tags_csv.ilike(like, escape="\\")
+            | Repository.description.ilike(like, escape="\\")
         )
 
     total = db.execute(select(func.count()).select_from(Repository).where(*conds)).scalar_one()
@@ -203,7 +225,7 @@ def create_repo(payload: RepoCreate, db: Session = Depends(get_session)) -> Repo
         license=payload.license or None,
         task=payload.task or None,
         library=payload.library or None,
-        tags_csv=",".join(t.strip() for t in payload.tags if t.strip()),
+        tags_csv=_normalize_tags(payload.tags),
     )
     db.add(repo)
     db.commit()
@@ -222,7 +244,7 @@ def update_repo(
     repo = _get_repo(db, owner, name)
     data = payload.model_dump(exclude_unset=True)
     if "tags" in data and data["tags"] is not None:
-        repo.tags_csv = ",".join(t.strip() for t in data.pop("tags") if t.strip())
+        repo.tags_csv = _normalize_tags(data.pop("tags"))
     else:
         data.pop("tags", None)
     for key, value in data.items():
