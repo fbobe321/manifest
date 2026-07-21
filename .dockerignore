@@ -1,0 +1,18 @@
+# Frontend
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+# Backend
+backend/.venv
+backend/data
+backend/__pycache__
+**/__pycache__
+*.pyc
+
+# Local state / tooling
+data
+.git
+.env
+*.md
+!PRD.md

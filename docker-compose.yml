@@ -1,0 +1,33 @@
+services:
+  catalog:
+    build: .
+    image: local-ai-catalog:latest
+    container_name: local_ai_catalog
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # Stateful DB mount: externalizes the SQLite database to the host so it
+      # can be backed up with a plain file copy / rsync.
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/catalog.db
+      # Seed a few example repositories on first run (empty DB only).
+      - SEED_DEMO_DATA=true
+
+    # --- Security Hardening Directives (see PRD.md) ---
+
+    # Prevents modification of the container's internal filesystem.
+    read_only: true
+
+    # Ephemeral, writable space in memory for any temp files.
+    tmpfs:
+      - /tmp
+
+    # Drops all default Linux capabilities.
+    cap_drop:
+      - ALL
+
+    # Blocks privilege escalation via setuid/setgid binaries.
+    security_opt:
+      - no-new-privileges:true
