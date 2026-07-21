@@ -1,10 +1,10 @@
-# Local AI Hub — a self-hosted Hugging Face clone
+# Local AI Hub — a self-hosted model & dataset repository
 
-A small, offline-friendly hub for cataloging **models** and **datasets**. Users
-create a repository, write a Markdown model-/dataset-card, tag it, and list its
-files as **external links** — the hub stores the metadata and the link, never
-the bytes. Ships as a single hardened container (React SPA served by FastAPI),
-per [`PRD.md`](./PRD.md).
+A small, offline-friendly repository for cataloging **models** and **datasets**.
+Users create a repository, write a Markdown model-/dataset-card, tag it, and list
+its files as **external links** — the catalog stores the metadata and the link,
+never the bytes. Ships as a single hardened container (React SPA served by
+FastAPI), per [`PRD.md`](./PRD.md).
 
 ## What it does
 
@@ -120,8 +120,8 @@ Interactive docs: `http://localhost:8080/api/docs`.
 ## Note on the PRD
 
 The PRD described a filesystem *scanner* over a mounted asset share
-(`ASSET_SCAN_PATH`, `/mnt/network_shares`). This build instead follows the
-requested Hugging Face model: **no scanning** — users create repositories and
+(`ASSET_SCAN_PATH`, `/mnt/network_shares`). This build instead uses a
+user-driven catalog model: **no scanning** — users create repositories and
 add file links. The scan-related volume/env were therefore dropped from
 `docker-compose.yml`; all of the PRD's security-hardening directives and the
 single-container architecture are kept intact.

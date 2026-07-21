@@ -1,6 +1,6 @@
 """SQLAlchemy ORM models.
 
-A local Hugging Face clone: users own *repositories* (models or datasets).
+A self-hosted model & dataset repository: users own *repositories* (models or datasets).
 A repository holds a markdown model-card plus a list of files. Files are NOT
 stored here — each file is just an external link to wherever the bytes live.
 """
@@ -44,7 +44,7 @@ class Repository(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    # "owner/name" — the natural key, like a Hub repo id.
+    # "owner/name" — the natural, namespaced key for a repository.
     repo_id: Mapped[str] = mapped_column(String, unique=True, index=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     owner_username: Mapped[str] = mapped_column(String, index=True)

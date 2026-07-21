@@ -1,4 +1,4 @@
-"""FastAPI application: a local, self-hosted Hugging Face clone.
+"""FastAPI application: a local, self-hosted model & dataset repository.
 
 Users create model/dataset repositories, write a markdown card, and list files
 as external links (the bytes live on other servers — we only store the link).
